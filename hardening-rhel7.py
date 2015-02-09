@@ -4,6 +4,8 @@
 """
  Hardenings check
 
+ Based on STIG and CIS
+
  Copyright Jan-Karel Visser - all rights are reserved
  Licensed under the LGPLv3 (http://www.gnu.org/licenses/lgpl.html)
 
