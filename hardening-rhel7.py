@@ -82,9 +82,9 @@ log = {"DMESG":{"cmd":"cat /var/log/dmesg","msg":"DMESG (Display message / drive
 
 systeeminformatie = {"OS":{"cmd":"cat /etc/redhat-release","msg":"Operating System","results":results,"check":False,"ret":False,"comment":False}, 
        "KERNEL":{"cmd":"cat /proc/version","msg":"Kernel","results":results,"check":False,"ret":False,"comment":False}, 
-       "HOSTNAME":{"cmd":"hostname", "msg":"Hostname", "results":results,"check":False,"ret":False,"comment":False}
-       "MEMINFO":{"cmd":"cat /proc/meminfo", "msg":"Geheugen informatie", "results":results,"check":False,"ret":False,"comment":False}
-       "MEMINFO2":{"cmd":"free -m", "msg":"Geheugen gebruik", "results":results,"check":False,"ret":False,"comment":False}
+       "HOSTNAME":{"cmd":"hostname", "msg":"Hostname", "results":results,"check":False,"ret":False,"comment":False},
+       "MEMINFO":{"cmd":"cat /proc/meminfo", "msg":"Geheugen informatie", "results":results,"check":False,"ret":False,"comment":False},
+       "MEMINFO2":{"cmd":"free -m", "msg":"Geheugen gebruik", "results":results,"check":False,"ret":False,"comment":False},
        "DMIDECODE":{"cmd":"dmidecode", "msg":"BIOS informatie", "results":results,"check":False,"ret":False,"comment":False}
       }
 
