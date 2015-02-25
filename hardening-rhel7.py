@@ -182,7 +182,7 @@ permissies = {"WWDIRSROOT":{"cmd":"find / \( -wholename '/home/homedir*' -prune 
        "ROOTHOME":{"cmd":"ls -ahlR /root 2>/dev/null", "msg":"Controle op toegangelijkheid rootfolder", "results":results,"check":False,"ret":False,"comment":False}
       }
 
-tools = {"TOOLS":{"cmd":"which awk perl python ruby gcc cc vi vim nmap find netcat nc wget tftp ftp 2>/dev/null", "msg":"Aangetroffen tools", "results":results,"check":False,"ret":False,"comment":['Een kwaadwillende kan met het aanroepen','Dezebevinding dient handmatig verder worden uitgewert']}
+tools = {"TOOLS":{"cmd":"which awk perl python ruby gcc cc vi vim nmap find netcat nc wget tftp ftp 2>/dev/null", "msg":"Aangetroffen tools", "results":results,"check":False,"ret":False,"comment":['Een kwaadwillende kan met het aanroepen','Dezebevinding dient handmatig verder worden uitgewert']},
 
 "RHELGPG":{"cmd":'rpm -q --queryformat "%{SUMMARY}\n" gpg-pubkey' , "msg":"1.2.2 Verify Red Hat GPG Key is Installed (Scored)", "results":results,"check":1,"ret":False,
 "comment":['Red Hat cryptographically signs updates with a GPG key to verify that they are valid.',
