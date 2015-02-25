@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 """
- Hardenings check
-
- Based on STIG and CIS RHEL7 benchmark
+  RHEL 7 hardenings check
+  Should possible work on Fedora and CentOS too....
 
  Copyright Jan-Karel Visser - all rights are reserved
  Licensed under the LGPLv3 (http://www.gnu.org/licenses/lgpl.html)
@@ -44,22 +43,24 @@ def uitvoer(cmdDict):
         if check == 1:
             if ret:
                 if results.find(ret) >=1:
-                    opmerkingen.append(cmdDict[item])
+                  ditisgoed = True
+                else:
+                  opmerkingen.append(cmdDict[item])
 
             else:
                 if results[0] =='':
-                    opmerkingen.append(cmdDict[item])
+                  opmerkingen.append(cmdDict[item])
         else:
             print "\n[+] " + msg
-            print "command: " + str(opdracht) + "\n"
+            print "opdracht: " + str(opdracht) + "\n"
             for result in results:
 
                 if result.strip() != "":
-                    print "    " + result.strip()
+                  print "    " + result.strip()
 
 
 
-# Basic system info
+#Basis databees
 
 
 """
@@ -68,18 +69,51 @@ Opdrachten
 """
 
 
-systeeminformatie = {"OS":{"cmd":"cat /etc/issue","msg":"Operating System","results":results,"check":False,"ret":False,"comment":False}, 
+
+
+
+
+
+log = {"DMESG":{"cmd":"cat /var/log/dmesg","msg":"DMESG (Display message / driver message)","results":results,"check":False,"ret":False,"comment":False}, 
+      "SECURE":{"cmd":"cat /var/log/secure","msg":"SECURE","results":results,"check":False,"ret":False,"comment":False},
+      "AIDE":{"cmd":"cat /var/log/aide/aide.log","msg":"AIDE (Advanced Intrusion Detection Environment)","results":results,"check":False,"ret":False,"comment":False},
+      "MAILLOG":{"cmd":"cat /var/log/maillog","msg":"Maillog","results":results,"check":False,"ret":False,"comment":False},
+      }
+
+systeeminformatie = {"OS":{"cmd":"cat /etc/redhat-release","msg":"Operating System","results":results,"check":False,"ret":False,"comment":False}, 
        "KERNEL":{"cmd":"cat /proc/version","msg":"Kernel","results":results,"check":False,"ret":False,"comment":False}, 
        "HOSTNAME":{"cmd":"hostname", "msg":"Hostname", "results":results,"check":False,"ret":False,"comment":False}
+       "MEMINFO":{"cmd":"cat /proc/meminfo", "msg":"Geheugen informatie", "results":results,"check":False,"ret":False,"comment":False}
+       "MEMINFO2":{"cmd":"free -m", "msg":"Geheugen gebruik", "results":results,"check":False,"ret":False,"comment":False}
+       "DMIDECODE":{"cmd":"dmidecode", "msg":"BIOS informatie", "results":results,"check":False,"ret":False,"comment":False}
       }
 
 netwerkinformatie = {"NETINFO":{"cmd":"/sbin/ifconfig -a", "msg":"Interfaces", "results":results,"check":False,"ret":False,"comment":False},
        "ROUTE":{"cmd":"route", "msg":"Route", "results":results,"check":False,"ret":False,"comment":False},
-       "NETSTAT":{"cmd":"netstat -antup | grep -v 'TIME_WAIT'", "msg":"Netstat", "results":results,"check":False,"ret":False,"comment":False}
+       "NETSTAT":{"cmd":"netstat -antup | grep -v 'TIME_WAIT'", "msg":"Netstat", "results":results,"check":False,"ret":False,"comment":False},
+       "ARP":{"cmd":"arp", "msg":"Arp", "results":results,"check":False,"ret":False,"comment":False}
       }
 
-schijfinformatie = {"MOUNT":{"cmd":"mount","msg":"Mount results", "results":results,"check":False,"ret":False,"comment":False},
-         "FSTAB":{"cmd":"cat /etc/fstab 2>/dev/null", "msg":"fstab entries", "results":results,"check":False,"ret":False,"comment":False},
+gebruikersinformatie = {"WHOAMI":{"cmd":"whoami", "msg":"Huidige gebruiker", "results":results,"check":False,"ret":False,"comment":False},
+        "ID":{"cmd":"id","msg":"Huidige gebruikers id", "results":results,"check":False,"ret":False,"comment":False},
+        "ALLUSERS":{"cmd":"cat /etc/passwd", "msg":"Alle gebruikers", "results":results,"check":False,"ret":False,"comment":False},
+        "SUPUSERS":{"cmd":"grep -v -E '^#' /etc/passwd | awk -F: '$3 == 0{print $1}'", "msg":"Super users gevonden:", "results":results,"check":False,"ret":False,"comment":False},
+        "HISTORY":{"cmd":"ls -la ~/.*_history; ls -la /root/.*_history 2>/dev/null", "msg":"Root en huidige gebruiker history (afhankelijk  van privilege)", "results":results,"check":False,"ret":False,"comment":False},
+        "ENV":{"cmd":"env 2>/dev/null | grep -v 'LS_COLORS'", "msg":"Omgeving", "results":results,"check":False,"ret":False,"comment":False},
+        "SUDOERS":{"cmd":"cat /etc/sudoers 2>/dev/null | grep -v '#' 2>/dev/null", "msg":"Sudoers (privileged)", "results":results,"check":False,"ret":False,"comment":False},
+        "LOGGEDIN":{"cmd":"w 2>/dev/null", "msg":"Aangemelde gebruikers", "results":results,"check":False,"ret":False,"comment":False},
+        "LAST":{"cmd":"last", "msg":"Login geschiedenis", "results":results,"check":False,"ret":False,"comment":False},
+        "LASTLOG":{"cmd":"lastlog", "msg":"Uitvoer lastlog", "results":results,"check":False,"ret":False,"comment":False},
+       }
+
+crontaken = {"CRON":{"cmd":"ls -la /etc/cron* 2>/dev/null", "msg":"Actieve cron taken", "results":results,"check":False,"ret":False,"comment":False},
+        "CRONW": {"cmd":"ls -aRl /etc/cron* 2>/dev/null | awk '$1 ~ /w.$/' 2>/dev/null", "msg":"Schrijfbare cron directories", "results":results,"check":False,"ret":False,"comment":False}
+       }  
+
+schijfinformatie = {
+        "DFH":{"cmd":"df -h","msg":"Schijf gebruik", "results":results,"check":False,"ret":False,"comment":False},
+        "MOUNT":{"cmd":"mount","msg":"Mount resultaat", "results":results,"check":False,"ret":False,"comment":False},
+         "FSTAB":{"cmd":"cat /etc/fstab 2>/dev/null", "msg":"fstab (file systems table)", "results":results,"check":False,"ret":False,"comment":False},
          "SEPARATE":{"cmd":'grep "[[:space:]]/tmp[[:space:]]" /etc/fstab', "msg":"1.1.1 Create Separate Partition for /tmp (Scored)", "results":results,"check":1,"ret":False,
 "comment":['The /tmp directory is a world-writable directory used for temporary storage by all usersand some applications.',
 'Since the /tmp directory is intended to be world-writable, there is a risk of resource exhaustion if it is not bound to a separate partition']},
@@ -141,57 +175,81 @@ schijfinformatie = {"MOUNT":{"cmd":"mount","msg":"Mount results", "results":resu
         }
 
 
-# Scheduled Cron Jobs
-crontaken = {"CRON":{"cmd":"ls -la /etc/cron* 2>/dev/null", "msg":"Scheduled cron jobs", "results":results,"check":False,"ret":False,"comment":False},
-        "CRONW": {"cmd":"ls -aRl /etc/cron* 2>/dev/null | awk '$1 ~ /w.$/' 2>/dev/null", "msg":"Writable cron dirs", "results":results,"check":False,"ret":False,"comment":False}
-       }        
-
-gebruikersinformatie = {"WHOAMI":{"cmd":"whoami", "msg":"Current User", "results":results,"check":False,"ret":False,"comment":False},
-        "ID":{"cmd":"id","msg":"Current User ID", "results":results,"check":False,"ret":False,"comment":False},
-        "ALLUSERS":{"cmd":"cat /etc/passwd", "msg":"All users", "results":results,"check":False,"ret":False,"comment":False},
-        "SUPUSERS":{"cmd":"grep -v -E '^#' /etc/passwd | awk -F: '$3 == 0{print $1}'", "msg":"Super Users Found:", "results":results,"check":False,"ret":False,"comment":False},
-        "HISTORY":{"cmd":"ls -la ~/.*_history; ls -la /root/.*_history 2>/dev/null", "msg":"Root and current user history (depends on privs)", "results":results,"check":False,"ret":False,"comment":False},
-        "ENV":{"cmd":"env 2>/dev/null | grep -v 'LS_COLORS'", "msg":"Environment", "results":results,"check":False,"ret":False,"comment":False},
-        "SUDOERS":{"cmd":"cat /etc/sudoers 2>/dev/null | grep -v '#' 2>/dev/null", "msg":"Sudoers (privileged)", "results":results,"check":False,"ret":False,"comment":False},
-        "LOGGEDIN":{"cmd":"w 2>/dev/null", "msg":"Logged in User Activity", "results":results,"check":False,"ret":False,"comment":False}
-       }
-
-permissies = {"WWDIRSROOT":{"cmd":"find / \( -wholename '/home/homedir*' -prune \) -o \( -type d -perm -0002 \) -exec ls -ld '{}' ';' 2>/dev/null | grep root", "msg":"World Writeable Directories for User/Group 'Root'", "results":results,"check":False,"ret":False,"comment":False},
-       "WWDIRS":{"cmd":"find / \( -wholename '/home/homedir*' -prune \) -o \( -type d -perm -0002 \) -exec ls -ld '{}' ';' 2>/dev/null | grep -v root", "msg":"World Writeable Directories for Users other than Root", "results":results,"check":False,"ret":False,"comment":False},
-       "WWFILES":{"cmd":"find / \( -wholename '/home/homedir/*' -prune -o -wholename '/proc/*' -prune \) -o \( -type f -perm -0002 \) -exec ls -l '{}' ';' 2>/dev/null", "msg":"World Writable Files", "results":results,"check":False,"ret":False,"comment":False},
-       "SUID":{"cmd":"find / \( -perm -2000 -o -perm -4000 \) -exec ls -ld {} \; 2>/dev/null", "msg":"SUID/SGID Files and Directories", "results":results,"check":False,"ret":False,"comment":False},
-       "ROOTHOME":{"cmd":"ls -ahlR /root 2>/dev/null", "msg":"Checking if root's home folder is accessible", "results":results,"check":False,"ret":False,"comment":False}
+permissies = {"WWDIRSROOT":{"cmd":"find / \( -wholename '/home/homedir*' -prune \) -o \( -type d -perm -0002 \) -exec ls -ld '{}' ';' 2>/dev/null | grep root", "msg":"World Writeable Directories voor gebruiker/groep 'Root'", "results":results,"check":False,"ret":False,"comment":False},
+       "WWDIRS":{"cmd":"find / \( -wholename '/home/homedir*' -prune \) -o \( -type d -perm -0002 \) -exec ls -ld '{}' ';' 2>/dev/null | grep -v root", "msg":"World Writeable Directories voor gebruiker anders dan 'Root'", "results":results,"check":False,"ret":False,"comment":False},
+       "WWFILES":{"cmd":"find / \( -wholename '/home/homedir/*' -prune -o -wholename '/proc/*' -prune \) -o \( -type f -perm -0002 \) -exec ls -l '{}' ';' 2>/dev/null", "msg":"World Writable Bestanden", "results":results,"check":False,"ret":False,"comment":False},
+       "SUID":{"cmd":"find / \( -perm -2000 -o -perm -4000 \) -exec ls -ld {} \; 2>/dev/null", "msg":"SUID/SGID Bestanden", "results":results,"check":False,"ret":False,"comment":False},
+       "ROOTHOME":{"cmd":"ls -ahlR /root 2>/dev/null", "msg":"Controle op toegangelijkheid rootfolder", "results":results,"check":False,"ret":False,"comment":False}
       }
 
-tools = {"TOOLS":{"cmd":"which awk perl python ruby gcc cc vi vim nmap find netcat nc wget tftp ftp 2>/dev/null", "msg":"Installed Tools", "results":results,"check":False,"ret":False,"comment":False}}
+tools = {"TOOLS":{"cmd":"which awk perl python ruby gcc cc vi vim nmap find netcat nc wget tftp ftp 2>/dev/null", "msg":"Aangetroffen tools", "results":results,"check":False,"ret":False,"comment":['Een kwaadwillende kan met het aanroepen','Dezebevinding dient handmatig verder worden uitgewert']}
+
+"RHELGPG":{"cmd":'rpm -q --queryformat "%{SUMMARY}\n" gpg-pubkey' , "msg":"1.2.2 Verify Red Hat GPG Key is Installed (Scored)", "results":results,"check":1,"ret":False,
+"comment":['Red Hat cryptographically signs updates with a GPG key to verify that they are valid.',
+'It is important to ensure that updates are obtained from a valid source to protect against spoofing that could lead to the inadvertent installation of malware on the system.']},
+
+"RHELGPGCHECK":{"cmd":'rpm -q --queryformat "%{SUMMARY}\n" gpg-pubkey' , "msg":"1.2.3 Verify that gpgcheck is Globally Activated (Scored)", "results":results,"check":1,"ret":'gpg(Red Hat, Inc.',
+"comment":['The gpgcheck option, found in the main section of the /etc/yum.conf file determines if an RPM package\'s signature is always checked prior to its installation.',
+'It is important to ensure that an RPM\'s package signature is always checked prior to installation to ensure that the software is obtained from a trusted source.']},
+"SOFTPAKKET": {"cmd": "rpm -qVa | awk '$2 != \"c\" { print $0}'", "msg": "Pakket integriteit", "results":results,"check":False,"ret":False,"comment":False}
+
+}
+
+ #pakket integriteit
+ #"rpm -qVa | awk '$2 != \"c\" { print $0}'"
+ #rpm -q aide ret=aide-
+
+selinux = {
+"SECONFIG": {"cmd":"cat /etc/selinux/config", "msg": "SELinux configuratie", "results":results,"check":False,"ret":False,"comment":False},
+"SECRUN": {"cmd":"usr/sbin/sestatus","msg": "SELinux sestatus opdracht", "results":results,"check":False,"ret":False,"comment":False},
+"RPMTROUBLE": {"cmd":"rpm -q setroubleshoot","msg": "Aanwezigheid van het pakket settroubleshoot", "results":results,"check":1,"ret":'is not installed',"comment":False},
+"SADEAMONS": {"cmd":"ps -eZ | egrep \"initrc\" | egrep -vw \"tr|ps|egrep|bash|awk\" | tr ':' ' ' | awk '{print $NF }'","msg": "Onbevestigde deamons",
+"results":results,"check":1,"ret":False,"comment":['Deamons die niet zijn gedefineerd in de SELinux police erven de rechten van het parent proces', 
+'Omdat de deamons worden gestart door het proces init, erven de processen de rechten over van initrc_t. Het gevolg hiervan is dat processen kunnen draaien met meer rechten dan noodzakelijk']},
+
+"RPMTROUBLE2": {"cmd":"rpm -q mcstrans","msg": "Aanwezigheid van het pakket settroubleshoot", "results":results,"check":1,"ret":'is not installed',"comment":False},
+
+"GRUB1": {"cmd":'stat -L -c "%u %g" /boot/grub2/grub.cfg | egrep "0 0"',"msg": "Aanwezigheid van het pakket settroubleshoot", "results":results,"check":1,"ret":'0 0',"comment":False},
+
+"GRUB2": {"cmd":'stat -L -c "%a" /boot/grub2/grub.cfg | egrep ".00"',"msg": "Aanwezigheid van het pakket settroubleshoot", "results":results,"check":1,"ret":False,"comment":False},
+"SECLIMITS": {"cmd":'grep "hard core" /etc/security/limits.conf',"msg": "Aanwezigheid van het pakket settroubleshoot", "results":results,"check":1,"ret":'* hard core 0',"comment":False},
+#sysctl fs.suid_dumpable
+
+}
 
 
-print "=== System information:\n"
+print "=== Systeem informatie:\n"
 systeeminformatie = opdracht(systeeminformatie)
 uitvoer(systeeminformatie)
-print "\n\n=== Network information:\n"
+print "\n\n=== Netwerk informatie:\n"
 netwerkinformatie = opdracht(netwerkinformatie)
 uitvoer(netwerkinformatie)
-print "\n\n=== Disk & partition information:\n"
+print "\n\n=== Schijf & partitie informatie:\n"
 schijfinformatie = opdracht(schijfinformatie)
 uitvoer(schijfinformatie)
 print "\n\n=== Cronjobs:\n"
 crontaken = opdracht(crontaken)
 uitvoer(crontaken)
-print "\n\n=== User information:\n"
+print "\n\n=== Gebruikers informatie:\n"
 gebruikersinformatie = opdracht(gebruikersinformatie)
 uitvoer(gebruikersinformatie)
-#print "\n\n=== Permissions:\n"
-#permissies = opdracht(permissies)
-#uitvoer(permissies)
-print "\n\n=== Available tools:\n"
+print "\n\n=== Permissies:\n"
+permissies = opdracht(permissies)
+uitvoer(permissies)
+print "\n\n=== Hardening:\n"
+selinux = opdracht(selinux)
+uitvoer(selinux)
+print "\n\n=== Software:\n"
 tools = opdracht(tools)
 uitvoer(tools)
+print "\n\n=== Log bestanden:\n"
+log = opdracht(log)
+uitvoer(log)
 
-print "\n\n=== Conclusion \nThe following "+str(len(opmerkingen))+" points are inconsistent with the best practices for hardening"
+print "\n\n=== Conclusie: \nDe volgende "+str(len(opmerkingen))+" punten wijken af met betrekking tot de best practices voor hardening:"
 
 #volgorde omdraaien
 for x in opmerkingen:
-    print '\n'+x['msg'] + '\nAudit:'+ x['cmd'] + '\n\nDescription:\n'+ x['comment'][0] +'\n\nRationale:\n'+ x['comment'][1]
+    print '\n'+x['msg'] + '\nAudit:'+ x['cmd'] + '\n\nToelichting:\n'+ x['comment'][0] +'\n\nRisico:\n'+ x['comment'][1]
 
 
