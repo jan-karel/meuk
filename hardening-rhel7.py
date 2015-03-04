@@ -24,7 +24,7 @@ results=[]
 opmerkingen = []
 
 def opdracht(cmdDict):
-    for item in cmdDict:
+    for item in sorted(cmdDict):
         cmd = cmdDict[item]["cmd"]
         out, error = sub.Popen([cmd], stdout=sub.PIPE, stderr=sub.PIPE, shell=True).communicate()
         results = out.split('\n')
@@ -42,7 +42,7 @@ def uitvoer(cmdDict):
         opdracht = cmdDict[item]["cmd"]
         if check == 1:
             if ret:
-                if results.find(ret) >=1:
+                if results[0].find(ret) >=1:
                   ditisgoed = True
                 else:
                   opmerkingen.append(cmdDict[item])
@@ -57,164 +57,229 @@ def uitvoer(cmdDict):
 
                 if result.strip() != "":
                   print "    " + result.strip()
-
-
-
-#Basis databees
-
-
 """
 Opdrachten
 
 """
 
-
-
-
-
-
-
-log = {"DMESG":{"cmd":"cat /var/log/dmesg","msg":"DMESG (Display message / driver message)","results":results,"check":False,"ret":False,"comment":False}, 
-      "SECURE":{"cmd":"cat /var/log/secure","msg":"SECURE","results":results,"check":False,"ret":False,"comment":False},
-      "AIDE":{"cmd":"cat /var/log/aide/aide.log","msg":"AIDE (Advanced Intrusion Detection Environment)","results":results,"check":False,"ret":False,"comment":False},
-      "MAILLOG":{"cmd":"cat /var/log/maillog","msg":"Maillog","results":results,"check":False,"ret":False,"comment":False},
+log = {1:{"cmd":"cat /var/log/dmesg","msg":"DMESG (Display message / driver message)","results":results,"check":False,"ret":False,"comment":False}, 
+      2:{"cmd":"cat /var/log/secure","msg":"SECURE","results":results,"check":False,"ret":False,"comment":False},
+      3:{"cmd":"cat /var/log/aide/aide.log","msg":"AIDE (Advanced Intrusion Detection Environment)","results":results,"check":False,"ret":False,"comment":False},
+      4:{"cmd":"cat /var/log/maillog","msg":"Maillog","results":results,"check":False,"ret":False,"comment":False},
       }
 
-systeeminformatie = {"OS":{"cmd":"cat /etc/redhat-release","msg":"Operating System","results":results,"check":False,"ret":False,"comment":False}, 
-       "KERNEL":{"cmd":"cat /proc/version","msg":"Kernel","results":results,"check":False,"ret":False,"comment":False}, 
-       "HOSTNAME":{"cmd":"hostname", "msg":"Hostname", "results":results,"check":False,"ret":False,"comment":False},
-       "MEMINFO":{"cmd":"cat /proc/meminfo", "msg":"Geheugen informatie", "results":results,"check":False,"ret":False,"comment":False},
-       "MEMINFO2":{"cmd":"free -m", "msg":"Geheugen gebruik", "results":results,"check":False,"ret":False,"comment":False},
-       "DMIDECODE":{"cmd":"dmidecode", "msg":"BIOS informatie", "results":results,"check":False,"ret":False,"comment":False}
+systeeminformatie = {1:{"cmd":"cat /etc/redhat-release","msg":"Operating System","results":results,"check":False,"ret":False,"comment":False}, 
+       2:{"cmd":"cat /proc/version","msg":"Kernel","results":results,"check":False,"ret":False,"comment":False}, 
+       3:{"cmd":"hostname", "msg":"Hostname", "results":results,"check":False,"ret":False,"comment":False},
+       4:{"cmd":"cat /proc/meminfo", "msg":"Geheugen informatie", "results":results,"check":False,"ret":False,"comment":False},
+       5:{"cmd":"free -m", "msg":"Geheugen gebruik", "results":results,"check":False,"ret":False,"comment":False},
+       6:{"cmd":"dmidecode", "msg":"BIOS informatie", "results":results,"check":False,"ret":False,"comment":False}
       }
 
-netwerkinformatie = {"NETINFO":{"cmd":"/sbin/ifconfig -a", "msg":"Interfaces", "results":results,"check":False,"ret":False,"comment":False},
-       "ROUTE":{"cmd":"route", "msg":"Route", "results":results,"check":False,"ret":False,"comment":False},
-       "NETSTAT":{"cmd":"netstat -antup | grep -v 'TIME_WAIT'", "msg":"Netstat", "results":results,"check":False,"ret":False,"comment":False},
-       "ARP":{"cmd":"arp", "msg":"Arp", "results":results,"check":False,"ret":False,"comment":False}
+netwerkinformatie = {1:{"cmd":"/sbin/ifconfig -a", "msg":"Interfaces", "results":results,"check":False,"ret":False,"comment":False},
+       2:{"cmd":"route", "msg":"Route", "results":results,"check":False,"ret":False,"comment":False},
+       3:{"cmd":"netstat -antup | grep -v 'TIME_WAIT'", "msg":"Netstat", "results":results,"check":False,"ret":False,"comment":False},
+       4:{"cmd":"arp", "msg":"Arp", "results":results,"check":False,"ret":False,"comment":False}
       }
 
-gebruikersinformatie = {"WHOAMI":{"cmd":"whoami", "msg":"Huidige gebruiker", "results":results,"check":False,"ret":False,"comment":False},
-        "ID":{"cmd":"id","msg":"Huidige gebruikers id", "results":results,"check":False,"ret":False,"comment":False},
-        "ALLUSERS":{"cmd":"cat /etc/passwd", "msg":"Alle gebruikers", "results":results,"check":False,"ret":False,"comment":False},
-        "SUPUSERS":{"cmd":"grep -v -E '^#' /etc/passwd | awk -F: '$3 == 0{print $1}'", "msg":"Super users gevonden:", "results":results,"check":False,"ret":False,"comment":False},
-        "HISTORY":{"cmd":"ls -la ~/.*_history; ls -la /root/.*_history 2>/dev/null", "msg":"Root en huidige gebruiker history (afhankelijk  van privilege)", "results":results,"check":False,"ret":False,"comment":False},
-        "ENV":{"cmd":"env 2>/dev/null | grep -v 'LS_COLORS'", "msg":"Omgeving", "results":results,"check":False,"ret":False,"comment":False},
-        "SUDOERS":{"cmd":"cat /etc/sudoers 2>/dev/null | grep -v '#' 2>/dev/null", "msg":"Sudoers (privileged)", "results":results,"check":False,"ret":False,"comment":False},
-        "LOGGEDIN":{"cmd":"w 2>/dev/null", "msg":"Aangemelde gebruikers", "results":results,"check":False,"ret":False,"comment":False},
-        "LAST":{"cmd":"last", "msg":"Login geschiedenis", "results":results,"check":False,"ret":False,"comment":False},
-        "LASTLOG":{"cmd":"lastlog", "msg":"Uitvoer lastlog", "results":results,"check":False,"ret":False,"comment":False},
+gebruikersinformatie = {1:{"cmd":"whoami", "msg":"Huidige gebruiker", "results":results,"check":False,"ret":False,"comment":False},
+        2:{"cmd":"id","msg":"Huidige gebruikers id", "results":results,"check":False,"ret":False,"comment":False},
+        3:{"cmd":"cat /etc/passwd", "msg":"Alle gebruikers", "results":results,"check":False,"ret":False,"comment":False},
+        4:{"cmd":"grep -v -E '^#' /etc/passwd | awk -F: '$3 == 0{print $1}'", "msg":"Super users gevonden:", "results":results,"check":False,"ret":False,"comment":False},
+        5:{"cmd":"ls -la ~/.*_history; ls -la /root/.*_history 2>/dev/null", "msg":"Root en huidige gebruiker history (afhankelijk  van privilege)", "results":results,"check":False,"ret":False,"comment":False},
+        6:{"cmd":"env 2>/dev/null | grep -v 'LS_COLORS'", "msg":"Omgeving", "results":results,"check":False,"ret":False,"comment":False},
+        7:{"cmd":"cat /etc/sudoers 2>/dev/null | grep -v '#' 2>/dev/null", "msg":"Sudoers (privileged)", "results":results,"check":False,"ret":False,"comment":False},
+        8:{"cmd":"w 2>/dev/null", "msg":"Aangemelde gebruikers", "results":results,"check":False,"ret":False,"comment":False},
+        9:{"cmd":"last", "msg":"Login geschiedenis", "results":results,"check":False,"ret":False,"comment":False},
+        10:{"cmd":"lastlog", "msg":"Uitvoer lastlog", "results":results,"check":False,"ret":False,"comment":False},
        }
 
-crontaken = {"CRON":{"cmd":"ls -la /etc/cron* 2>/dev/null", "msg":"Actieve cron taken", "results":results,"check":False,"ret":False,"comment":False},
-        "CRONW": {"cmd":"ls -aRl /etc/cron* 2>/dev/null | awk '$1 ~ /w.$/' 2>/dev/null", "msg":"Schrijfbare cron directories", "results":results,"check":False,"ret":False,"comment":False}
+crontaken = {1:{"cmd":"ls -la /etc/cron* 2>/dev/null", "msg":"Actieve cron taken", "results":results,"check":False,"ret":False,"comment":False},
+        2: {"cmd":"ls -aRl /etc/cron* 2>/dev/null | awk '$1 ~ /w.$/' 2>/dev/null", "msg":"Schrijfbare cron directories", "results":results,"check":False,"ret":False,"comment":False}
        }  
 
 schijfinformatie = {
-        "DFH":{"cmd":"df -h","msg":"Schijf gebruik", "results":results,"check":False,"ret":False,"comment":False},
-        "MOUNT":{"cmd":"mount","msg":"Mount resultaat", "results":results,"check":False,"ret":False,"comment":False},
-         "FSTAB":{"cmd":"cat /etc/fstab 2>/dev/null", "msg":"fstab (file systems table)", "results":results,"check":False,"ret":False,"comment":False},
-         "SEPARATE":{"cmd":'grep "[[:space:]]/tmp[[:space:]]" /etc/fstab', "msg":"1.1.1 Create Separate Partition for /tmp (Scored)", "results":results,"check":1,"ret":False,
-"comment":['The /tmp directory is a world-writable directory used for temporary storage by all usersand some applications.',
-'Since the /tmp directory is intended to be world-writable, there is a risk of resource exhaustion if it is not bound to a separate partition']},
-"NODEV":{"cmd":'grep "[[:space:]]/tmp[[:space:]]" /etc/fstab', "msg":"1.1.2 Set nodev option for /tmp Partition (Scored)", "results":results,"check":1,"ret":False,"comment":['The nodev mount option specifies that the filesystem cannot contain special devices.',
-'Since the /tmp filesystem is not intended to support devices, set this option to ensure that users cannot attempt to create block or character special devices in /tmp.']},
-"NOSUID1":{"cmd":'[[:space:]]/tmp[[:space:]]" /etc/fstab | grep nosuid', "msg":"1.1.3 Set nosuid option for /tmp Partition (Scored)", "results":results,"check":1,"ret":False,"comment":['False','']},
-"NOSUID2":{"cmd":'mount | grep "[[:space:]]/tmp[[:space:]] | grep nosuid', "msg":"1.1.3 Set nosuid option for /tmp Partition (Scored)", "results":results,"check":1,"ret":False,"comment":['False','']},
-        "NOEXEC1":{"cmd":'grep "[[:space:]]/tmp[[:space:]]" /etc/fstab | grep noexec', "msg":"1.1.4 Set noexec option for /tmp Partition (Scored)", "results":results,"check":1,"ret":False,
-"comment":['The noexec mount option specifies that the filesystem cannot contain executable binaries.',
-'Since the /tmp filesystem is only intended for temporary file storage, set this option to ensure that users cannot run executable binaries from /tmp.']},
+        1:{"cmd":"df -h","msg":"Schijf gebruik", "results":results,"check":False,"ret":False,"comment":False},
+        2:{"cmd":"mount","msg":"Mount resultaat", "results":results,"check":False,"ret":False,"comment":False},
+        3:{"cmd":"cat /etc/fstab 2>/dev/null", "msg":"fstab (file systems table)", "results":results,"check":False,"ret":False,"comment":False},
+        4:{"cmd":'grep "[[:space:]]/tmp[[:space:]]" /etc/fstab', "msg":"Maak een aparte partitie voor tmp aan", "results":results,"check":1,"ret":False,
+"comment":['De /tmp directorie is een world-writable directorie gebruikt voor tijdelijke opslag voor alle gebruikers en applicaties.',
+'Omdat deze directory bedoeld world-writable is, is er een risico voor dat men het systeem kan laten vastlopen door de /tmp volledig te vullen.']},
 
-"NOEXEC2":{"cmd":'mount | grep "[[:space:]]/tmp[[:space:]]" | grep noexec', "msg":"1.1.4 Set noexec option for /tmp Partition (Scored)", "results":results,"check":1,"ret":False,
-"comment":['The noexec mount option specifies that the filesystem cannot contain executable binaries.',
-'Since the /tmp filesystem is only intended for temporary file storage, set this option to ensure that users cannot run executable binaries from /tmp.']},
+        5:{"cmd":'grep "[[:space:]]/tmp[[:space:]]" /etc/fstab', "msg":"Zet de nodev optie voor de tmp partitie", "results":results,"check":1,"ret":False,"comment":['De nodev optie bepaalt dat de partitie geen special devices mag bevatten.',
+'De /tmp directorie is niet bestemd voor devices, zet deze optie zodat gebruikers geen block of character special devices in /tmp kunnen aanmaken.']},
+        
+        6:{"cmd":'[[:space:]]/tmp[[:space:]]" /etc/fstab | grep nosuid', "msg":"Zet de nosuid optie voor de /tmp partitie", "results":results,"check":1,"ret":False,
+"comment":['De nosuid mount optie zorgt dat gebruikers geen userid bestanden kunnen aanmaken','Omdat /tmp alleen bedoeld is voor tijdelijke opslag, zet deze optie zodat gebruikers geen userid bestanden in /tmp kunnen aanmaken']},
 
-"SEPVAR":{"cmd":'grep "[[:space:]]/var[[:space:]]" /etc/fstab', "msg":"1.1.5 Create Separate Partition for /var (Scored)", "results":results,"check":1,"ret":False,
-"comment":['The /var directory is used by daemons and other system services to temporarily store dynamic data. Some directories created by these processes may be world-writable',
-'Since the /var directory may contain world-writable files and directories, there is a risk of resource exhaustion if it is not bound to a separate partition.']},
+7:{"cmd":'mount | grep "[[:space:]]/tmp[[:space:]]" | grep noexec', "msg":"Zet de noexec optie voor de /tmp partitie", "results":results,"check":1,"ret":False,"comment":['De noexec mount optie bepaald dat de /tmp directorie geen uitvoerbare bestanden kan bevatten.','Omdat /tmp alleen bedoeld is voor tijdelijke opslag het is niet bedoeld en gevaarlijk als gebruikers hier code kunnen uitvoeren.']},
 
-"BINDVAR1":{"cmd":'grep -e "^/tmp[[:space:]]" /etc/fstab | grep /var/tmp', "msg":"1.1.6 Bind Mount the /var/tmp directory to /tmp (Scored)", "results":results,"check":1,"ret":False,
-"comment":['The /var/tmp directory is normally a standalone directory in the /var file system. Binding /var/tmp to /tmp establishes an unbreakable link to /tmp that cannot be removed (even by the root user). ',
-'All programs that use /var/tmp and /tmp to read/write temporary files will always be written to the /tmp file system, preventing a user from running the /var file system out of space or trying to perform operations that have been blocked in the /tmp filesystem.']},
+8:{"cmd":'grep "[[:space:]]/var[[:space:]]" /etc/fstab', "msg":"Maak een aparte partitie aan voor /var", "results":results,"check":1,"ret":False,
+"comment":['De /var partitie wordt o.a. gebruikt door deamons en het opslaan van log bestanden',
+'De /var directorie bevat world-writable bestanden en folders, er is een risico op het vol laten lopen van het systeem als de /var niet in een aparte partitie staat.']},
 
-"BINDVAR2":{"cmd":'mount | grep -e "^/tmp[[:space:]]" | grep /var/tmp', "msg":"1.1.6 Bind Mount the /var/tmp directory to /tmp (Scored)", "results":results,"check":1,"ret":False,
-"comment":['The /var/tmp directory is normally a standalone directory in the /var file system. Binding /var/tmp to /tmp establishes an unbreakable link to /tmp that cannot be removed (even by the root user). ',
-'All programs that use /var/tmp and /tmp to read/write temporary files will always be written to the /tmp file system, preventing a user from running the /var file system out of space or trying to perform operations that have been blocked in the /tmp filesystem.']},
+9:{"cmd":'grep -e "^/tmp[[:space:]]" /etc/fstab | grep /var/tmp', "msg":"Koppel de /var/tmp partitie op /tmp partitie", "results":results,"check":1,"ret":False,
+"comment":['The /var/tmp directorie is normaliter een standalone directorie in de /var partitie. Het koppelen van /var/tmp op /tmp zorgt dat de /var/tmp niet kan worden verwijderd. ',
+'Hiermee wordt voorkomen dat in de var/tmp directorie wel acties kunnen worden uitgevoerd die niet voor /tmp zijn toegestaan.']},
 
 
-"SEPLOG":{"cmd":'grep "[[:space:]]/var/log/audit[[:space:]]" /etc/fstab', "msg":"1.1.8 Create Separate Partition for /var/log/audit (Scored)", "results":results,"check":1,"ret":False,
-"comment":['The auditing daemon, auditd, stores log data in the /var/log/audit directory.',
-'There are two important reasons to ensure that data gathered by auditd is stored on a separate partition: protection against resource exhaustion (since the audit.log file can grow quite large) and protection of audit data. ']},
+10:{"cmd":'grep "[[:space:]]/var/log/audit[[:space:]]" /etc/fstab', "msg":"Maak een aparte partitie aan voor /var/log/audit", "results":results,"check":1,"ret":False,
+"comment":['De auditing daemon, auditd, slaat log data op in de  /var/log/audit directorie.',
+'Hiermee worden twee onderdelen afgevangen, het voorkomen dat het systeem volloopt (grote bestanden) en het beveiligen van de log data.']},
 
 
-"SEPHOME":{"cmd":'grep "[[:space:]]/home[[:space:]]" /etc/fstab', "msg":"1.1.9 Create Separate Partition for /home (Scored)", "results":results,"check":1,"ret":False,
-"comment":['The /home directory is used to support disk storage needs of local users',
-'If the system is intended to support local users, create a separate partition for the /home directory to protect against resource exhaustion and restrict the type of files that can be stored under /home.']},
+11:{"cmd":'grep "[[:space:]]/home[[:space:]]" /etc/fstab', "msg":"Maak een aparte partitie aan voor /home", "results":results,"check":1,"ret":False,
+"comment":['The /home directorie is de partitie voor gebruikers ',
+'Hiermee wordt voorkomen dat het systeem kan volloopt en kan de /home gehardend worden.']},
 
-"HOMENODEV":{"cmd":'grep "[[:space:]]/home[[:space:]]" /etc/fstab', "msg":"1.1.10 Add nodev Option to /home (Scored)", "results":results,"check":1,"ret":False,
-"comment":['When set on a file system, this option prevents character and block special devices from being defined, or if they exist, from being used as character and block special devices.',
-'Since the user partitions are not intended to support devices, set this option to ensure that users cannot attempt to create block or character special devices.']},
+12:{"cmd":'grep "[[:space:]]/home[[:space:]]" /etc/fstab', "msg":"Zet de nodev optie voor /home", "results":results,"check":1,"ret":False,
+"comment":['Deze optie voorkomt dat character and block special devices aan de home directorie kunnen worden toegevoegd.', 'De home partitie is niet bedoeld voor het ondersteunen van devices.']},
 
-"SHMNODEV":{"cmd":'grep /dev/shm /etc/fstab | grep nodev', "msg":"1.1.14 Add nodev Option to /dev/shm Partition (Scored)", "results":results,"check":1,"ret":False,
-"comment":['The nodev mount option specifies that the /dev/shm (temporary filesystem stored in memory) cannot contain block or character special devices.',
-'Since the /dev/shm filesystem is not intended to support devices, set this option to ensure that users cannot attempt to create special devices in /dev/shm partitions']},
+13:{"cmd":'grep /dev/shm /etc/fstab | grep nodev', "msg":"Zet de nodev optie voor de /dev/shm partitie", "results":results,"check":1,"ret":False,
+"comment":['The nodev optie bepaald dat de shared memory geen block of character special devices kan bevatten.', 'De shared memory partitie is niet bedoeld voor het ondersteunen van devices.']},
 
-"SHMNOSUID":{"cmd":'grep /dev/shm /etc/fstab | grep nodev', "msg":"1.1.15 Add nosuid Option to /dev/shm Partition (Scored)", "results":results,"check":1,"ret":False,
-"comment":['The nosuid mount option specifies that the /dev/shm (temporary filesystem stored in memory) will not execute setuid and setgid on executable programs as such, but rather execute them with the uid and gid of the user executing the program.',
-'Setting this option on a file system prevents users from introducing privileged programs onto the system and allowing non-root users to execute them']},
+14:{"cmd":'grep /dev/shm /etc/fstab | grep nosuid', "msg":"Zet de nosuid optie voor de /dev/shm partitie", "results":results,"check":1,"ret":False,
+"comment":['De nosuid optie bepaald dat setuid en setgid niet op uitvoerbare bestanden gezet kan worden',
+'Hiermee wordt voorkomen dat gebruikers hun rechten kunnen laten escaleren.']},
 
-"SHMNOEXEC":{"cmd":'grep /dev/shm /etc/fstab | grep nodev', "msg":"1.1.16 Add noexec Option to /dev/shm Partition (Scored)", "results":results,"check":1,"ret":False,
-"comment":['Set noexec on the shared memory partition to prevent programs from executing from there.',
-'Setting this option on a file system prevents users from executing programs from shared memory. This deters users from introducing potentially malicious software on the system.']},
+15:{"cmd":'grep /dev/shm /etc/fstab | grep nodev', "msg":"Zet de noexec optie voor de /dev/shm partitie", "results":results,"check":1,"ret":False,
+"comment":['De noexec optie voorkomt dat bestanden kunnen worden uitgevoerd in deze partitie.',
+'Hiermee wordt voorkomen dat gebruikers bestanden vanuit het shared memory kunnen uitvoeren om de rechten te escaleren.']},
 
-"STICKBIT":{"cmd":"df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d  \ ( -perm -0002 -a ! -perm -1000 \) 2>/dev/null", "msg":"1.1.17 Set Sticky Bit on All World-Writable Directories (Scored)", "results":results,"check":1,"ret":False,
-"comment":['Setting the sticky bit on world writable directories prevents users from deleting or renaming files in that directory that are not owned by them.',
-'This feature prevents the ability to delete or rename files in world writable directories (such as /tmp) that are owned by another user.']},
+16:{"cmd":"df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d  \ ( -perm -0002 -a ! -perm -1000 \) 2>/dev/null", "msg":"Zet de Sticky Bit op alle World-Writable directories", "results":results,"check":1,"ret":False,
+"comment":['Hiermee wordt voorkomen dat gebruikers niet de bestanden kunnen wijzigen waarvan zij geen eigenaar zijn.',
+'Hiermee wordt voorkomen dat gebruikers hun rechten kunnen escaleren.']},
 
 
         }
 
 
-permissies = {"WWDIRSROOT":{"cmd":"find / \( -wholename '/home/homedir*' -prune \) -o \( -type d -perm -0002 \) -exec ls -ld '{}' ';' 2>/dev/null | grep root", "msg":"World Writeable Directories voor gebruiker/groep 'Root'", "results":results,"check":False,"ret":False,"comment":False},
-       "WWDIRS":{"cmd":"find / \( -wholename '/home/homedir*' -prune \) -o \( -type d -perm -0002 \) -exec ls -ld '{}' ';' 2>/dev/null | grep -v root", "msg":"World Writeable Directories voor gebruiker anders dan 'Root'", "results":results,"check":False,"ret":False,"comment":False},
-       "WWFILES":{"cmd":"find / \( -wholename '/home/homedir/*' -prune -o -wholename '/proc/*' -prune \) -o \( -type f -perm -0002 \) -exec ls -l '{}' ';' 2>/dev/null", "msg":"World Writable Bestanden", "results":results,"check":False,"ret":False,"comment":False},
-       "SUID":{"cmd":"find / \( -perm -2000 -o -perm -4000 \) -exec ls -ld {} \; 2>/dev/null", "msg":"SUID/SGID Bestanden", "results":results,"check":False,"ret":False,"comment":False},
-       "ROOTHOME":{"cmd":"ls -ahlR /root 2>/dev/null", "msg":"Controle op toegangelijkheid rootfolder", "results":results,"check":False,"ret":False,"comment":False}
+permissies = {1:{"cmd":"find / \( -wholename '/home/homedir*' -prune \) -o \( -type d -perm -0002 \) -exec ls -ld '{}' ';' 2>/dev/null | grep root", "msg":"World Writeable Directories voor gebruiker/groep 'Root'", "results":results,"check":False,"ret":False,"comment":False},
+       2:{"cmd":"find / \( -wholename '/home/homedir*' -prune \) -o \( -type d -perm -0002 \) -exec ls -ld '{}' ';' 2>/dev/null | grep -v root", "msg":"World Writeable Directories voor gebruiker anders dan 'Root'", "results":results,"check":False,"ret":False,"comment":False},
+       3:{"cmd":"find / \( -wholename '/home/homedir/*' -prune -o -wholename '/proc/*' -prune \) -o \( -type f -perm -0002 \) -exec ls -l '{}' ';' 2>/dev/null", "msg":"World Writable Bestanden", "results":results,"check":False,"ret":False,"comment":False},
+       4:{"cmd":"find / \( -perm -2000 -o -perm -4000 \) -exec ls -ld {} \; 2>/dev/null", "msg":"SUID/SGID Bestanden", "results":results,"check":False,"ret":False,"comment":False},
+       5:{"cmd":"ls -ahlR /root 2>/dev/null", "msg":"Controle op toegangelijkheid root folder", "results":results,"check":False,"ret":False,"comment":False}
       }
 
-tools = {"TOOLS":{"cmd":"which awk perl python ruby gcc cc vi vim nmap find netcat nc wget tftp ftp 2>/dev/null", "msg":"Aangetroffen tools", "results":results,"check":False,"ret":False,"comment":['Een kwaadwillende kan met het aanroepen','Dezebevinding dient handmatig verder worden uitgewert']},
+tools = {1:{"cmd":"which awk perl python ruby gcc cc vi vim nmap find netcat nc wget tftp ftp 2>/dev/null", "msg":"Aangetroffen tools", "results":results,"check":False,"ret":False,"comment":['Een kwaadwillende kan met het aanroepen van deze bestanden zijn rechten escaleren','Deze bevinding dient handmatig verder te worden uitgewerkt']},
 
-"RHELGPG":{"cmd":'rpm -q --queryformat "%{SUMMARY}\n" gpg-pubkey' , "msg":"1.2.2 Verify Red Hat GPG Key is Installed (Scored)", "results":results,"check":1,"ret":False,
-"comment":['Red Hat cryptographically signs updates with a GPG key to verify that they are valid.',
+2:{"cmd":'rpm -q --queryformat "%{SUMMARY}\n" gpg-pubkey' , "msg":"Controle op de aanwezigheid van de Red Hat GPG Key", "results":results,"check":1,"ret":False,
+3:['Red Hat cryptographically signs updates with a GPG key to verify that they are valid.',
 'It is important to ensure that updates are obtained from a valid source to protect against spoofing that could lead to the inadvertent installation of malware on the system.']},
 
-"RHELGPGCHECK":{"cmd":'rpm -q --queryformat "%{SUMMARY}\n" gpg-pubkey' , "msg":"1.2.3 Verify that gpgcheck is Globally Activated (Scored)", "results":results,"check":1,"ret":'gpg(Red Hat, Inc.',
+4:{"cmd":'rpm -q --queryformat "%{SUMMARY}\n" gpg-pubkey' , "msg":"Verificatie dat gpgcheck globaal is geactiveerd", "results":results,"check":1,"ret":'gpg(Red Hat, Inc.',
 "comment":['The gpgcheck option, found in the main section of the /etc/yum.conf file determines if an RPM package\'s signature is always checked prior to its installation.',
 'It is important to ensure that an RPM\'s package signature is always checked prior to installation to ensure that the software is obtained from a trusted source.']},
-"SOFTPAKKET": {"cmd": "rpm -qVa | awk '$2 != \"c\" { print $0}'", "msg": "Pakket integriteit", "results":results,"check":False,"ret":False,"comment":False}
+5: {"cmd": "rpm -qVa | awk '$2 != \"c\" { print $0}'", "msg": "Test op pakket integriteit", "results":results,"check":False,"ret":False,"comment":False},
+6: {"cmd": "rpm -qVa | awk '$2 != \"c\" { print $0}'", "msg": "Test op pakket integriteit", "results":results,"check":1,"ret":False,"comment":['Pakketten die niet volledig zijn of waarvan de rechten niet goed staan kunnen het systeem verzwakken','Ontbrekende pakketten zijn een veiligheids riscico. ']}
 
 }
 
- #pakket integriteit
- #"rpm -qVa | awk '$2 != \"c\" { print $0}'"
- #rpm -q aide ret=aide-
 
 selinux = {
-"SECONFIG": {"cmd":"cat /etc/selinux/config", "msg": "SELinux configuratie", "results":results,"check":False,"ret":False,"comment":False},
-"SECRUN": {"cmd":"usr/sbin/sestatus","msg": "SELinux sestatus opdracht", "results":results,"check":False,"ret":False,"comment":False},
-"RPMTROUBLE": {"cmd":"rpm -q setroubleshoot","msg": "Aanwezigheid van het pakket settroubleshoot", "results":results,"check":1,"ret":'is not installed',"comment":False},
-"SADEAMONS": {"cmd":"ps -eZ | egrep \"initrc\" | egrep -vw \"tr|ps|egrep|bash|awk\" | tr ':' ' ' | awk '{print $NF }'","msg": "Onbevestigde deamons",
+1: {"cmd":"cat /etc/selinux/config", "msg": "SELinux configuratie", "results":results,"check":False,"ret":False,"comment":False},
+2: {"cmd":"usr/sbin/sestatus","msg": "SELinux sestatus opdracht", "results":results,"check":False,"ret":False,"comment":False},
+3: {"cmd":"rpm -q setroubleshoot","msg": "Aanwezigheid van het pakket settroubleshoot", "results":results,"check":1,"ret":'is not installed',"comment":['','']},
+4: {"cmd":"ps -eZ | egrep \"initrc\" | egrep -vw \"tr|ps|egrep|bash|awk\" | tr ':' ' ' | awk '{print $NF }'","msg": "Onbevestigde deamons",
 "results":results,"check":1,"ret":False,"comment":['Deamons die niet zijn gedefineerd in de SELinux police erven de rechten van het parent proces', 
 'Omdat de deamons worden gestart door het proces init, erven de processen de rechten over van initrc_t. Het gevolg hiervan is dat processen kunnen draaien met meer rechten dan noodzakelijk']},
-
-"RPMTROUBLE2": {"cmd":"rpm -q mcstrans","msg": "Aanwezigheid van het pakket settroubleshoot", "results":results,"check":1,"ret":'is not installed',"comment":False},
-
-"GRUB1": {"cmd":'stat -L -c "%u %g" /boot/grub2/grub.cfg | egrep "0 0"',"msg": "Aanwezigheid van het pakket settroubleshoot", "results":results,"check":1,"ret":'0 0',"comment":False},
-
-"GRUB2": {"cmd":'stat -L -c "%a" /boot/grub2/grub.cfg | egrep ".00"',"msg": "Aanwezigheid van het pakket settroubleshoot", "results":results,"check":1,"ret":False,"comment":False},
-"SECLIMITS": {"cmd":'grep "hard core" /etc/security/limits.conf',"msg": "Aanwezigheid van het pakket settroubleshoot", "results":results,"check":1,"ret":'* hard core 0',"comment":False},
+5: {"cmd":"rpm -q mcstrans","msg": "Aanwezigheid van het pakket settroubleshoot", "results":results,"check":1,"ret":'is not installed',"comment":False},
+6: {"cmd":'stat -L -c "%u %g" /boot/grub2/grub.cfg | egrep "0 0"',"msg": "Aanwezigheid van het pakket settroubleshoot", "results":results,"check":1,"ret":'0 0',"comment":['','']},
+7: {"cmd":'stat -L -c "%a" /boot/grub2/grub.cfg | egrep ".00"',"msg": "Aanwezigheid van het pakket settroubleshoot", "results":results,"check":1,"ret":False,"comment":['','']},
+"SECLIMITS": {"cmd":'grep "hard core" /etc/security/limits.conf',"msg": "Aanwezigheid van het pakket settroubleshoot", "results":results,"check":1,"ret":'* hard core 0',"comment":['','']},
 #sysctl fs.suid_dumpable
 
+}
+
+
+ownhome = '''cat /etc/passwd | awk -F: '{ print $1 " " $3 " " $6 }' | while read user uid dir; do
+if [ $uid -ge 1000 -a -d "$dir" -a $user != "nfsnobody" ]; then owner=$(stat -L -c "%U" "$dir")
+if [ "$owner" != "$user" ]; then
+echo "The home directory ($dir) of user $user is owned by $owner." fi
+fi done'''
+
+dubgids ='''/bin/cat /etc/group | /bin/cut -f3 -d":" | /bin/sort -n | /usr/bin/uniq -c |\ while read x ; do
+[ -z "${x}" ] && break
+set - $x
+if [ $1 -gt 1 ]; then
+grps=`/bin/gawk -F: '($3 == n) { print $1 }' n=$2 \
+/etc/group | xargs`
+echo "Duplicate GID ($2): ${grps}"
+fi done'''
+
+resuid = '''defUsers="root bin daemon adm lp sync shutdown halt mail news uucp operator games gopher ftp nobody nscd vcsa rpc mailnull smmsp pcap ntp dbus avahi sshd rpcuser nfsnobody haldaemon avahi-autoipd distcache apache oprofile webalizer dovecot squid named xfs gdm sabayon usbmuxd rtkit abrt saslauth pulse postfix tcpdump"
+/bin/cat /etc/passwd |\
+/bin/awk -F: '($3 < 500) { print $1" "$3 }' |\ while read user uid; do
+found=0
+for tUser in ${defUsers}
+do
+if [ ${user} = ${tUser} ]; then
+found=1 fi
+done
+if [ $found -eq 0 ]; then
+echo "User $user has a reserved UID ($uid)." fi
+done'''
+
+dubbelnamen = '''cat /etc/passwd | cut -f1 -d":" | /bin/sort -n | /usr/bin/uniq -c |\
+while read x ; do
+[ -z "${x}" ] && break set - $x
+if [ $1 -gt 1 ]; then
+uids=`/bin/gawk -F: '($1 == n) { print $3 }' n=$2 \ /etc/passwd | xargs`
+echo "Duplicate User Name ($2): ${uids}" fi
+done'''
+
+forward = '''for dir in `/bin/cat /etc/passwd |\
+/bin/awk -F: '{ print $6 }'`; do
+if [ ! -h "$dir/.forward" -a -f "$dir/.forward" ]; then echo ".forward file $dir/.forward exists"
+fi
+done'''
+
+netrsc = '''for dir in `/bin/cat /etc/passwd |\
+/bin/awk -F: '{ print $6 }'`; do
+if [ ! -h "$dir/.netrc" -a -f "$dir/.netrc" ]; then
+echo ".netrc file $dir/.netrc exists" fi
+done'''
+
+dupnamen = '''cat /etc/group | cut -f1 -d":" | /bin/sort -n | /usr/bin/uniq -c |\
+  while read x ; do
+  [ -z "${x}" ] && break set - $x
+  if [ $1 -gt 1 ]; then
+    gids=`/bin/gawk -F: '($1 == n) { print $3 }' n=$2 \
+      /etc/group | xargs`
+    echo "Duplicate Group Name ($2): ${gids}"
+fi done'''
+
+hashome = '''cat /etc/passwd | awk -F: '{ print $1 " " $3 " " $6 }' | while read user uid dir; do if [ $uid -ge 1000 -a ! -d "$dir" -a $user != "nfsnobody" ]; then
+echo "The home directory ($dir) of user $user does not exist."
+fi
+done'''
+
+passwgroep = '''for i in $(cut -s -d: -f4 /etc/passwd | sort -u ); do
+grep -q -P "^.*?:x:$i:" /etc/group
+if [ $? -ne 0 ]; then
+echo "Group $i is referenced by /etc/passwd but does not exist in /etc/group" fi
+done'''
+
+rhost = '''for dir in `/bin/cat /etc/passwd | /bin/egrep -v '(root|halt|sync|shutdown)' |\
+/bin/awk -F: '($7 != "/sbin/nologin") { print $6 }'`; do for file in $dir/.rhosts; do
+if [ ! -h "$file" -a -f "$file" ]; then echo ".rhosts file in $dir"
+fi done done'''
+
+extra = {
+11: {"cmd":rhost,"msg": "Own home","results":results,"check":1,"ret":False,"comment":[]},
+12: {"cmd":passwgroep,"msg": "Own home","results":results,"check":1,"ret":False,"comment":[]},
+12: {"cmd":hashome,"msg": "Own home","results":results,"check":1,"ret":False,"comment":[]},
+13: {"cmd":ownhome,"msg": "Own home","results":results,"check":1,"ret":False,"comment":[]},
+14: {"cmd":dubgids,"msg": "Aanwezigheid van dubbele gids","results":results,"check":1,"ret":False,"comment":[]},
+15: {"cmd":dubbelnamen,"msg": "Aanwezigheid van dubbele groepen","results":results,"check":1,"ret":False,"comment":[]},
+16: {"cmd":dupnamen,"msg": "Aanwezigheid van dubbele groepen","results":results,"check":1,"ret":False,"comment":[]},
+17: {"cmd":netrsc,"msg": "Aanwezigheid van het Netrsc bestand",
+"results":results,"check":1,"ret":False,"comment":[]},
+
+18: {"cmd":forward,"msg": "aanwezigheid van het Forward bestand",
+"results":results,"check":1,"ret":False,"comment":[]},
+19: {"cmd":resuid,"msg": "aanwezigheid van het Forward bestand",
+"results":results,"check":1,"ret":False,"comment":[]},
 }
 
 
@@ -250,6 +315,7 @@ print "\n\n=== Conclusie: \nDe volgende "+str(len(opmerkingen))+" punten wijken 
 
 #volgorde omdraaien
 for x in opmerkingen:
-    print '\n'+x['msg'] + '\nAudit:'+ x['cmd'] + '\n\nToelichting:\n'+ x['comment'][0] +'\n\nRisico:\n'+ x['comment'][1]
+    print '\n[!] '+x['msg'] + '\nAudit:'+ x['cmd'] + '\n\nToelichting:\n'+ x['comment'][0] +'\n\nRisico:\n'+ x['comment'][1]
+
 
 
