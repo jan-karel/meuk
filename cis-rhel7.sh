@@ -5,6 +5,7 @@
 #
 # 20-04-2015 - Frank Spierings - Several bug fixes; grub2, grep mount, failing if-fi parts.
 # 20-04-2015 - Frank Spierings - GPG Check alternative
+# 20-04-2015 - Frank Spierings - SELinux; grep the output for the specific values.
 
 echo '1.1.1 Create Separate Partition for /tmp (Scored)'
 grep "[[:space:]]/tmp[[:space:]]" /etc/fstab
@@ -78,11 +79,11 @@ grep enforcing=0 /etc/grub2.conf 2>/dev/null
 
 echo '1.4.2 Set the SELinux State (Scored)'
 grep SELINUX=enforcing /etc/selinux/config
-/usr/sbin/sestatus
+/usr/sbin/sestatus | grep --color=never -i mode
 
 echo '1.4.3 Set the SELinux Policy (Scored)'
 grep SELINUXTYPE=targeted /etc/selinux/config
-/usr/sbin/sestatus
+/usr/sbin/sestatus | grep --color=never -i 'policy name'
 
 echo '1.4.4 Remove SETroubleshoot (Scored)'
 rpm -q setroubleshoot
