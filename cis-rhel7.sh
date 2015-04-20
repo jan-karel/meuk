@@ -92,8 +92,9 @@ echo '1.4.5 Remove MCS Translation Service (mcstrans) (Scored)'
 rpm -q mcstrans
 
 echo '1.4.6 Check for Unconfined Daemons (Scored)'
-ps -eZ | egrep "initrc" | egrep -vw "tr|ps|egrep|bash|awk" | tr ':' ' ' | awk '{
-print $NF }'
+ps -eZ | egrep "initrc" | egrep -vw "tr|ps|egrep|bash|awk" | tr ':' ' ' | awk '{print $NF}'
+echo '1.4.6 Check for Unconfined Daemons (Scored) (ALTERNATIVE)'
+ps -eo label,cmd | egrep "initrc" | egrep -vw "tr|ps|egrep|bash|awk" 
 
 echo '1.5.1 Set User/Group Owner on /boot/grub2/grub.cfg (Scored)'
 stat -L -c "%u %g" /boot/grub2/grub.cfg | egrep "0 0"
