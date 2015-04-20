@@ -2,6 +2,9 @@
 
 # CIS benchmark RHEL 7 audit
 # Jan-Karel Visser 2015
+#
+# 20-04-2015 - Frank Spierings - Several bug fixes; grub2, grep mount, failing if-fi parts.
+#
 
 echo '1.1.1 Create Separate Partition for /tmp (Scored)'
 grep "[[:space:]]/tmp[[:space:]]" /etc/fstab
@@ -11,7 +14,8 @@ grep "[[:space:]]/tmp[[:space:]]" /etc/fstab | grep nodev
 mount | grep "[[:space:]]/tmp[[:space:]]" | grep nodev
 
 echo '1.1.3 Set nosuid option for /tmp Partition (Scored)'
-mount -o remount,nosuid /tmp
+grep "[[:space:]]/tmp[[:space:]]" /etc/fstab | grep nosuid
+mount | grep "[[:space:]]/tmp[[:space:]]" | grep nosuid
 
 echo '1.1.4 Set noexec option for /tmp Partition (Scored)'
 grep "[[:space:]]/tmp[[:space:]]" /etc/fstab | grep noexec 
@@ -65,8 +69,10 @@ echo '1.3.2 Implement Periodic Execution of File Integrity (Scored)'
 crontab -u root -l | grep aide
 
 echo '1.4.1 Enable SELinux in /etc/grub.conf (Scored)'
-grep selinux=0 /etc/grub.conf
-grep enforcing=0 /etc/grub.conf
+grep selinux=0   /etc/grub.conf  2>/dev/null
+grep enforcing=0 /etc/grub.conf  2>/dev/null
+grep selinux=0   /etc/grub2.conf 2>/dev/null
+grep enforcing=0 /etc/grub2.conf 2>/dev/null
 
 echo '1.4.2 Set the SELinux State (Scored)'
 grep SELINUX=enforcing /etc/selinux/config
@@ -346,7 +352,7 @@ ls -l /etc/at.allow
 echo '6.2.1 Set SSH Protocol to 2 (Scored)'
 grep "^Protocol" /etc/ssh/sshd_config
 
-echo 'Set LogLevel to INFO (Scored)'
+echo '6.2.2 Set LogLevel to INFO (Scored)'
 grep "^LogLevel" /etc/ssh/sshd_config
 
 echo '6.2.3 Set Permissions on /etc/ssh/sshd_config (Scored)'
@@ -396,7 +402,7 @@ echo '6.3.2 Set Password Creation Requirement Parameters Using pam_cracklib (Sco
 grep pam_cracklib.so /etc/pam.d/system-auth
 
 echo '6.3.4 Limit Password Reuse (Scored)'
-grep "remember" /etc/pam.d/system_auth
+grep "remember" /etc/pam.d/system-auth
 
 echo '6.5 Restrict Access to the su Command (Scored)'
 grep pam_wheel.so /etc/pam.d/su
@@ -419,7 +425,7 @@ echo '7.3 Set Default Group for root Account (Scored)'
 grep "^root:" /etc/passwd | cut -f4 -d:
 
 echo '7.4 Set Default umask for Users (Scored)'
-grep "^umask 077" /etc/
+grep "^umask 077" /etc/bashrc
 grep "^umask 077" /etc/profile.d/*
 
 echo '7.5 Lock Inactive User Accounts (Scored)'
@@ -433,7 +439,7 @@ ls /etc/issue.net
 echo '8.2 Remove OS Information from Login Warning Banners (Scored)'
 egrep '(\\v|\\r|\\m|\\s)' /etc/issue
 egrep '(\\v|\\r|\\m|\\s)' /etc/motd
-egrep'(\\v|\\r|\\m|\\s)' /etc/issue.net
+egrep '(\\v|\\r|\\m|\\s)' /etc/issue.net
 
 echo '9.1.2 Verify Permissions on /etc/passwd (Scored)'
 ls -l /etc/passwd
@@ -460,10 +466,10 @@ echo '9.1.9 Verify User/Group Ownership on /etc/group (Scored)'
 ls -l /etc/group
 
 echo '9.1.11 Find Un-owned Files and Directories (Scored)'
-df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -nouser - ls
+df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -nouser -ls
 
 echo '9.1.12 Find Un-grouped Files and Directories (Scored)'
-df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -nogroup - ls
+df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -nogroup -ls
 
 echo '9.2.1 Ensure Password Fields are Not Empty (Scored)'
 cat /etc/shadow | /bin/awk -F: '($2 == "" ) { print $1 " does not have a password "}'
@@ -481,10 +487,10 @@ echo '9.2.5 Verify No UID 0 Accounts Exist Other Than root (Scored)'
 cat /etc/passwd | /bin/awk -F: '($3 == 0) { print $1 }'
 
 echo '9.2.6 Ensure root PATH Integrity (Scored)'
-if [ "`echo $PATH | grep :: `" != "" ]; then
+if [ "`echo $PATH | /bin/grep :: `" != "" ]; then
 	echo "Empty Directory in PATH (::)" 
 fi
-if [ "`echo $PATH | bin/grep :$`" != "" ]; then
+if [ "`echo $PATH | /bin/grep :$`" != "" ]; then
 	echo "Trailing : in PATH" 
 fi
 p=`echo $PATH | /bin/sed -e 's/::/:/' -e 's/:$//' -e 's/:/ /g'` 
@@ -594,21 +600,25 @@ echo '9.2.11 Check Groups in /etc/passwd (Scored)'
 for i in $(cut -s -d: -f4 /etc/passwd | sort -u ); do
 grep -q -P "^.*?:x:$i:" /etc/group
 if [ $? -ne 0 ]; then
-echo "Group $i is referenced by /etc/passwd but does not exist in /etc/group" fi
+	echo "Group $i is referenced by /etc/passwd but does not exist in /etc/group" 
+fi
 done
 
 echo '9.2.12 Check That Users Are Assigned Valid Home Directories (Scored)'
-cat /etc/passwd | awk -F: '{ print $1 " " $3 " " $6 }' | while read user uid dir; do if [ $uid -ge 1000 -a ! -d "$dir" -a $user != "nfsnobody" ]; then
-echo "The home directory ($dir) of user $user does not exist."
+cat /etc/passwd | awk -F: '{ print $1 " " $3 " " $6 }' | while read user uid dir; do 
+if [ $uid -ge 1000 -a ! -d "$dir" -a $user != "nfsnobody" ]; then
+	echo "The home directory ($dir) of user $user does not exist."
 fi
 done
 
 echo '9.2.13 Check User Home Directory Ownership (Scored)'
 cat /etc/passwd | awk -F: '{ print $1 " " $3 " " $6 }' | while read user uid dir; do
 if [ $uid -ge 1000 -a -d "$dir" -a $user != "nfsnobody" ]; then owner=$(stat -L -c "%U" "$dir")
-if [ "$owner" != "$user" ]; then
-echo "The home directory ($dir) of user $user is owned by $owner." fi
-fi done
+	if [ "$owner" != "$user" ]; then
+		echo "The home directory ($dir) of user $user is owned by $owner."
+	fi
+fi
+done
 
 echo '9.2.14 Check for Duplicate UIDs (Scored)'
 cat /etc/passwd | /bin/cut -f3 -d":" | /bin/sort -n | /usr/bin/uniq -c |\
@@ -623,7 +633,7 @@ cat /etc/passwd | /bin/cut -f3 -d":" | /bin/sort -n | /usr/bin/uniq -c |\
 done
 
 echo '9.2.15 Check for Duplicate GIDs (Scored)'
-cat /etc/group | /bin/cut -f3 -d":" | /bin/sort -n | /usr/bin/uniq -c |\ 
+cat /etc/group | /bin/cut -f3 -d":" | /bin/sort -n | /usr/bin/uniq -c |\
 	while read x ; do
 	[ -z "${x}" ] && break
 	set - $x
@@ -637,19 +647,19 @@ done
 echo '9.2.16 Check That Reserved UIDs Are Assigned to System Accounts (Scored)'
 defUsers="root bin daemon adm lp sync shutdown halt mail news uucp operator games gopher ftp nobody nscd vcsa rpc mailnull smmsp pcap ntp dbus avahi sshd rpcuser nfsnobody haldaemon avahi-autoipd distcache apache oprofile webalizer dovecot squid named xfs gdm sabayon usbmuxd rtkit abrt saslauth pulse postfix tcpdump"
 cat /etc/passwd |\
-	/bin/awk -F: '($3 < 500) { print $1" "$3 }' |\ 
-	while read user uid; do
-		found=0
-		for tUser in ${defUsers}
-		do
-			if [ ${user} = ${tUser} ]; then
-				found=1 
-			fi
-		done
-		if [ $found -eq 0 ]; then
-			echo "User $user has a reserved UID ($uid)." 
+/bin/awk -F: '($3 < 500) { print $1" "$3 }' |\
+while read user uid; do
+	found=0
+	for tUser in ${defUsers}
+	do
+		if [ ${user} = ${tUser} ]; then
+			found=1 
 		fi
 	done
+	if [ $found -eq 0 ]; then
+		echo "User $user has a reserved UID ($uid)." 
+	fi
+done
 
 echo '9.2.17 Check for Duplicate User Names (Scored)'
 cat /etc/passwd | cut -f1 -d":" | /bin/sort -n | /usr/bin/uniq -c |\
