@@ -4,7 +4,7 @@
 # Jan-Karel Visser 2015
 #
 # 20-04-2015 - Frank Spierings - Several bug fixes; grub2, grep mount, failing if-fi parts.
-#
+# 20-04-2015 - Frank Spierings - GPG Check alternative
 
 echo '1.1.1 Create Separate Partition for /tmp (Scored)'
 grep "[[:space:]]/tmp[[:space:]]" /etc/fstab
@@ -58,6 +58,8 @@ df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -typ
 
 echo '1.2.2 Verify Red Hat GPG Key is Installed (Scored)'
 rpm -q --queryformat "%{SUMMARY}\n" gpg-pubkey
+echo '1.2.2 Verify Red Hat GPG Key is Installed (Scored) (ALTERNATIVE)'
+rpm -qa gpg-pubkey* | xargs rpm -qi
 
 echo '1.2.3 Verify that gpgcheck is Globally Activated (Scored)'
 grep gpgcheck /etc/yum.conf
