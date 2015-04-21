@@ -313,9 +313,8 @@ echo '5.2.11 Collect Unsuccessful Unauthorized Access Attempts to Files (Scored)
 grep -Hir access /etc/audit/*
 
 echo '5.2.12 Collect Use of Privileged Commands (Scored)'
-find PART -xdev \( -perm -4000 -o -perm -2000 \) -type f | awk '{print \
- "-a always,exit -F path=" $1 " -F perm=x -F auid>=500 -F auid!=4294967295 \
-  -k privileged" }'
+find / -xdev \( -perm -4000 -o -perm -2000 \) -type f -ls
+find / -xdev \( -perm -4000 -o -perm -2000 \) -type f -exec grep -Hir {} /etc/audit/* \;
 
 echo '5.2.13 Collect Successful File System Mounts (Scored)'
 grep mounts /etc/audit/audit.rules
