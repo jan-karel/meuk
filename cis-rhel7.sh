@@ -146,6 +146,10 @@ rpm -q talk-server
 echo '2.1.11 Remove xinetd (Scored)'
 rpm -q xinetd
 
+echo '2.1.1* List all services (ALTERNATIVE)'
+chkconfig --list
+systemctl list-unit-files | grep '.service' 
+
 echo '2.1.12 Disable chargen-dgram (Scored)'
 chkconfig --list chargen-dgram
 
