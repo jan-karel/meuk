@@ -3,9 +3,21 @@
 # CIS benchmark RHEL 7 audit
 # Jan-Karel Visser 2015
 #
-# 20-04-2015 - Frank Spierings - Several bug fixes; grub2, grep mount, failing if-fi parts.
-# 20-04-2015 - Frank Spierings - GPG Check alternative
-# 20-04-2015 - Frank Spierings - SELinux; grep the output for the specific values.
+# 20-04-2015 - Frank Spierings - Several bug fixes; 
+#              1.1.3, 1.4.1, 1.4.6 6.2.2, 6.3.4, 7.4,
+#              8.2, 9.1.11, 9.1.12, 9.2.6, 9.2.12, 9.2.13, 
+#              9.2.15, 9.2.16.
+#              Alternative GPG. 
+#              Output limit sestatus (1.4.2 & 1.4.3).
+# 			   Alternative Unconfined Daemons
+#
+# 21-04-2015 - Frank Spierings - 
+#              Alternative 2.1.1* list all services
+#              Alternative 5.1.4 Rsyslog logfiles.
+#              Alternative 5.2.* Audit rules.            
+#              Alternative 6.2.* SSH Daemon checks.
+#			   Fix listing banner files.
+#
 
 echo '1.1.1 Create Separate Partition for /tmp (Scored)'
 grep "[[:space:]]/tmp[[:space:]]" /etc/fstab
@@ -420,7 +432,7 @@ echo '6.2.6 Set SSH IgnoreRhosts to Yes (Scored)'
 grep "^IgnoreRhosts" /etc/ssh/sshd_config
 
 echo '6.2.6 Set SSH IgnoreRhosts to Yes (Scored) (ALTERNATIVE)'
-sshd -T | grep - i "IgnoreRhosts"
+sshd -T | grep -i "IgnoreRhosts"
 
 echo '6.2.7 Set SSH HostbasedAuthentication to No (Scored)'
 grep "^HostbasedAuthentication" /etc/ssh/sshd_config
@@ -432,9 +444,6 @@ echo '6.2.8 Disable SSH Root Login (Scored)'
 grep "^PermitRootLogin" /etc/ssh/sshd_config
 
 echo '6.2.8 Disable SSH Root Login (Scored) (ALTERNATIVE)'
-grep "PermitRootLogin"
-
-echo '6.2.8 Disable SSH Root Login (Scored) ALTERNATIVE'
 sshd -T | grep -i "PermitRootLogin"
 
 echo '6.2.9 Set SSH PermitEmptyPasswords to No (Scored)'
