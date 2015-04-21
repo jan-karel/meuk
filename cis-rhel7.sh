@@ -355,13 +355,11 @@ grep "^-e 2" /etc/audit/*
 echo '6.1.1 Enable anacron Daemon (Scored)'
 rpm -q cronie-anacron
 
-
 echo '6.1.2 Enable crond Daemon (Scored)'
 systemctl is-enabled crond
 
 echo '6.1.3 Set User/Group Owner and Permission on /etc/anacrontab (Scored)'
 stat -L -c "%a %u %g" /etc/anacrontab | egrep ".00 0 0"
-
 
 echo '6.1.4 Set User/Group Owner and Permission on /etc/crontab (Scored)'
 stat -L -c "%a %u %g" /etc/crontab | egrep ".00 0 0"
@@ -394,8 +392,14 @@ ls -l /etc/at.allow
 echo '6.2.1 Set SSH Protocol to 2 (Scored)'
 grep "^Protocol" /etc/ssh/sshd_config
 
+echo '6.2.1 Set SSH Protocol to 2 (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "Protocol"
+
 echo '6.2.2 Set LogLevel to INFO (Scored)'
 grep "^LogLevel" /etc/ssh/sshd_config
+
+echo '6.2.2 Set LogLevel to INFO (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "LogLevel"
 
 echo '6.2.3 Set Permissions on /etc/ssh/sshd_config (Scored)'
 ls -l /etc/ssh/sshd_config
@@ -403,30 +407,61 @@ ls -l /etc/ssh/sshd_config
 echo '6.2.4 Disable SSH X11 Forwarding (Scored)'
 grep "^X11Forwarding" /etc/ssh/sshd_config
 
+echo '6.2.4 Disable SSH X11 Forwarding (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "X11Forwarding"
+
 echo '6.2.5 Set SSH MaxAuthTries to 4 or Less (Scored)'
 grep "^MaxAuthTries" /etc/ssh/sshd_config
+
+echo '6.2.5 Set SSH MaxAuthTries to 4 or Less (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "maxauthtries"
 
 echo '6.2.6 Set SSH IgnoreRhosts to Yes (Scored)'
 grep "^IgnoreRhosts" /etc/ssh/sshd_config
 
+echo '6.2.6 Set SSH IgnoreRhosts to Yes (Scored) (ALTERNATIVE)'
+sshd -T | grep - i "IgnoreRhosts"
+
 echo '6.2.7 Set SSH HostbasedAuthentication to No (Scored)'
 grep "^HostbasedAuthentication" /etc/ssh/sshd_config
+
+echo '6.2.7 Set SSH HostbasedAuthentication to No (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "HostbasedAuthentication"
 
 echo '6.2.8 Disable SSH Root Login (Scored)'
 grep "^PermitRootLogin" /etc/ssh/sshd_config
 
+echo '6.2.8 Disable SSH Root Login (Scored) (ALTERNATIVE)'
+grep "PermitRootLogin"
+
+echo '6.2.8 Disable SSH Root Login (Scored) ALTERNATIVE'
+sshd -T | grep -i "PermitRootLogin"
+
 echo '6.2.9 Set SSH PermitEmptyPasswords to No (Scored)'
 grep "^PermitEmptyPasswords" /etc/ssh/sshd_config
 
+echo '6.2.9 Set SSH PermitEmptyPasswords to No (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "PermitEmptyPasswords"
+
 echo '6.2.10 Do Not Allow Users to Set Environment Options (Scored)'
-grep PermitUserEnvironment /etc/ssh/sshd_config
+grep "PermitUserEnvironment" /etc/ssh/sshd_config
+
+echo '6.2.10 Do Not Allow Users to Set Environment Options (Scored) (ALTERNATIVE)'
+sshd -T | grep "PermitUserEnvironment"
 
 echo '6.2.11 Use Only Approved Cipher in Counter Mode (Scored)'
 grep "Ciphers" /etc/ssh/sshd_config
 
+echo '6.2.11 Use Only Approved Cipher in Counter Mode (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "Ciphers"
+
 echo '6.2.12 Set Idle Timeout Interval for User Login (Scored)'
 grep "^ClientAliveInterval" /etc/ssh/sshd_config
 grep "^ClientAliveCountMax" /etc/ssh/sshd_config
+
+echo '6.2.12 Set Idle Timeout Interval for User Login (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "ClientAliveInterval"
+sshd -T | grep -i "ClientAliveCountMax"
 
 echo '6.2.13 Limit Access via SSH (Scored)'
 grep "^AllowUsers" /etc/ssh/sshd_config
@@ -434,8 +469,17 @@ grep "^AllowGroups" /etc/ssh/sshd_config
 grep "^DenyUsers" /etc/ssh/sshd_config
 grep "^DenyGroups" /etc/ssh/sshd_config
 
+echo '6.2.13 Limit Access via SSH (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "AllowUsers"
+sshd -T | grep -i "AllowGroups"
+sshd -T | grep -i "DenyUsers"
+sshd -T | grep -i "DenyGroups"
+
 echo '6.2.14 Set SSH Banner (Scored)'
 grep "^Banner" /etc/ssh/sshd_config
+
+echo '6.2.14 Set SSH Banner (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "Banner"
 
 echo '6.3.1 Upgrade Password Hashing Algorithm to SHA-512 (Scored)'
 authconfig --test | grep hashing | grep sha512
