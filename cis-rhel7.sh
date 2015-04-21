@@ -246,6 +246,9 @@ rpm -q rsyslog
 echo '5.1.2 Activate the rsyslog Service (Scored)'
 systemctl is-enabled rsyslog
 
+echo '5.1.4 Create and Set Permissions on rsyslog Log Files (Scored) (ALTERNATIVE)'
+cat /etc/rsyslog.conf | grep -ve '^#' | grep -ve '^\s*$' | grep -ve '^\$'
+find /var/log/ -type f -ls
 
 echo '5.1.5 Configure rsyslog to Send Logs to a Remote Log Host (Scored)'
 grep "^*.*[^I][^I]*@" /etc/rsyslog.conf
