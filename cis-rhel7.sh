@@ -267,31 +267,50 @@ grep "linux" /boot/grub2/grub.cfg
 echo '5.2.4 Record Events That Modify Date and Time Information (Scored)'
 grep time-change /etc/audit/audit.rules
 
+echo '5.2.4 Record Events That Modify Date and Time Information (Scored) (ALTERNATIVE)'
+grep -Hir time-change /etc/audit/*
+
 echo '5.2.5 Record Events That Modify User/Group Information (Scored)'
 grep identity /etc/audit/audit.rules
 
+echo '5.2.5 Record Events That Modify User/Group Information (Scored) (ALTERNATIVE)'
+grep -Hir identity /etc/audit/*
 
 echo '5.2.6 Record Events That Modify the Systems Network Environment (Scored)'
 grep system-locale /etc/audit/audit.rules
 
+echo '5.2.6 Record Events That Modify the Systems Network Environment (Scored) (ALTERNATIVE)'
+grep -Hir system-locale /etc/audit/*
 
 echo '5.2.7 Record Events That Modify the Systems Mandatory Access Controls (Scored)'
 grep MAC-policy /etc/audit/audit.rules
 
+echo '5.2.7 Record Events That Modify the Systems Mandatory Access Controls (Scored) (ALTERNATIVE)'
+grep -Hir MAC-policy /etc/audit/*
 
 echo '5.2.8 Collect Login and Logout Events (Scored)'
 grep logins /etc/audit/audit.rules
 
+echo '5.2.8 Collect Login and Logout Events (Scored) (ALTERNATIVE)'
+grep -Hir logins /etc/audit/*
+
 echo '5.2.9 Collect Session Initiation Information (Scored)'
 grep session /etc/audit/audit.rules
+
+echo '5.2.9 Collect Session Initiation Information (Scored) (ALTERNATIVE)'
+grep -Hir session /etc/audit/*
 
 echo '5.2.10 Collect Discretionary Access Control Permission Modification Events (Scored)'
 grep perm_mod /etc/audit/audit.rules
 
+echo '5.2.10 Collect Discretionary Access Control Permission Modification Events (Scored) (ALTERNATIVE)'
+grep -Hir perm_mod /etc/audit/*
 
 echo '5.2.11 Collect Unsuccessful Unauthorized Access Attempts to Files (Scored)'
 grep access /etc/audit/audit.rules
 
+echo '5.2.11 Collect Unsuccessful Unauthorized Access Attempts to Files (Scored) (ALTERNATIVE)'
+grep -Hir access /etc/audit/*
 
 echo '5.2.12 Collect Use of Privileged Commands (Scored)'
 find PART -xdev \( -perm -4000 -o -perm -2000 \) -type f | awk '{print \
