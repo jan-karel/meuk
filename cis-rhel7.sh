@@ -3,9 +3,21 @@
 # CIS benchmark RHEL 7 audit
 # Jan-Karel Visser 2015
 #
-# 20-04-2015 - Frank Spierings - Several bug fixes; grub2, grep mount, failing if-fi parts.
-# 20-04-2015 - Frank Spierings - GPG Check alternative
-# 20-04-2015 - Frank Spierings - SELinux; grep the output for the specific values.
+# 20-04-2015 - Frank Spierings - Several bug fixes; 
+#              1.1.3, 1.4.1, 1.4.6 6.2.2, 6.3.4, 7.4,
+#              8.2, 9.1.11, 9.1.12, 9.2.6, 9.2.12, 9.2.13, 
+#              9.2.15, 9.2.16.
+#              Alternative GPG. 
+#              Output limit sestatus (1.4.2 & 1.4.3).
+# 			   Alternative Unconfined Daemons
+#
+# 21-04-2015 - Frank Spierings - 
+#              Alternative 2.1.1* list all services
+#              Alternative 5.1.4 Rsyslog logfiles.
+#              Alternative 5.2.* Audit rules.            
+#              Alternative 6.2.* SSH Daemon checks.
+#			   Fix listing banner files.
+#
 
 echo '1.1.1 Create Separate Partition for /tmp (Scored)'
 grep "[[:space:]]/tmp[[:space:]]" /etc/fstab
@@ -146,6 +158,10 @@ rpm -q talk-server
 echo '2.1.11 Remove xinetd (Scored)'
 rpm -q xinetd
 
+echo '2.1.1* List all services (ALTERNATIVE)'
+chkconfig --list
+systemctl list-unit-files | grep '.service' 
+
 echo '2.1.12 Disable chargen-dgram (Scored)'
 chkconfig --list chargen-dgram
 
@@ -242,6 +258,9 @@ rpm -q rsyslog
 echo '5.1.2 Activate the rsyslog Service (Scored)'
 systemctl is-enabled rsyslog
 
+echo '5.1.4 Create and Set Permissions on rsyslog Log Files (Scored) (ALTERNATIVE)'
+cat /etc/rsyslog.conf | grep -ve '^#' | grep -ve '^\s*$' | grep -ve '^\$'
+find /var/log/ -type f -ls
 
 echo '5.1.5 Configure rsyslog to Send Logs to a Remote Log Host (Scored)'
 grep "^*.*[^I][^I]*@" /etc/rsyslog.conf
@@ -260,70 +279,99 @@ grep "linux" /boot/grub2/grub.cfg
 echo '5.2.4 Record Events That Modify Date and Time Information (Scored)'
 grep time-change /etc/audit/audit.rules
 
+echo '5.2.4 Record Events That Modify Date and Time Information (Scored) (ALTERNATIVE)'
+grep -Hir time-change /etc/audit/*
+
 echo '5.2.5 Record Events That Modify User/Group Information (Scored)'
 grep identity /etc/audit/audit.rules
 
+echo '5.2.5 Record Events That Modify User/Group Information (Scored) (ALTERNATIVE)'
+grep -Hir identity /etc/audit/*
 
 echo '5.2.6 Record Events That Modify the Systems Network Environment (Scored)'
 grep system-locale /etc/audit/audit.rules
 
+echo '5.2.6 Record Events That Modify the Systems Network Environment (Scored) (ALTERNATIVE)'
+grep -Hir system-locale /etc/audit/*
 
 echo '5.2.7 Record Events That Modify the Systems Mandatory Access Controls (Scored)'
 grep MAC-policy /etc/audit/audit.rules
 
+echo '5.2.7 Record Events That Modify the Systems Mandatory Access Controls (Scored) (ALTERNATIVE)'
+grep -Hir MAC-policy /etc/audit/*
 
 echo '5.2.8 Collect Login and Logout Events (Scored)'
 grep logins /etc/audit/audit.rules
 
+echo '5.2.8 Collect Login and Logout Events (Scored) (ALTERNATIVE)'
+grep -Hir logins /etc/audit/*
+
 echo '5.2.9 Collect Session Initiation Information (Scored)'
 grep session /etc/audit/audit.rules
+
+echo '5.2.9 Collect Session Initiation Information (Scored) (ALTERNATIVE)'
+grep -Hir session /etc/audit/*
 
 echo '5.2.10 Collect Discretionary Access Control Permission Modification Events (Scored)'
 grep perm_mod /etc/audit/audit.rules
 
+echo '5.2.10 Collect Discretionary Access Control Permission Modification Events (Scored) (ALTERNATIVE)'
+grep -Hir perm_mod /etc/audit/*
 
 echo '5.2.11 Collect Unsuccessful Unauthorized Access Attempts to Files (Scored)'
 grep access /etc/audit/audit.rules
 
+echo '5.2.11 Collect Unsuccessful Unauthorized Access Attempts to Files (Scored) (ALTERNATIVE)'
+grep -Hir access /etc/audit/*
 
 echo '5.2.12 Collect Use of Privileged Commands (Scored)'
-find PART -xdev \( -perm -4000 -o -perm -2000 \) -type f | awk '{print \
- "-a always,exit -F path=" $1 " -F perm=x -F auid>=500 -F auid!=4294967295 \
-  -k privileged" }'
+find / -xdev \( -perm -4000 -o -perm -2000 \) -type f -ls
+find / -xdev \( -perm -4000 -o -perm -2000 \) -type f -exec grep -Hir {} /etc/audit/* \;
 
 echo '5.2.13 Collect Successful File System Mounts (Scored)'
 grep mounts /etc/audit/audit.rules
 
+echo '5.2.13 Collect Successful File System Mounts (Scored) (ALTERNATIVE)'
+grep -Hir mounts /etc/audit/*
 
 echo '5.2.14 Collect File Deletion Events by User (Scored)'
 grep delete /etc/audit/audit.rules
 
+echo '5.2.14 Collect File Deletion Events by User (Scored) (ALTERNATIVE)'
+grep delete /etc/audit/*
 
 echo '5.2.15 Collect Changes to System Administration Scope (sudoers) (Scored)'
 grep scope /etc/audit/audit.rules
 
+echo '5.2.15 Collect Changes to System Administration Scope (sudoers) (Scored) (ALTERNATIVE)'
+grep -Hir scope /etc/audit/*
 
 echo '5.2.16 Collect System Administrator Actions (sudolog) (Scored)'
 grep actions /etc/audit/audit.rules
 
+echo '5.2.16 Collect System Administrator Actions (sudolog) (Scored) (ALTERNATIVE)'
+grep -Hir actions /etc/audit/*
+
 echo '5.2.17 Collect Kernel Module Loading and Unloading (Scored)'
 grep modules /etc/audit/audit.rules
 
+echo '5.2.17 Collect Kernel Module Loading and Unloading (Scored) (ALTERNATIVE)'
+grep -Hir /etc/audit/*
 
 echo '5.2.18 Make the Audit Configuration Immutable (Scored)'
 grep "^-e 2" /etc/audit/audit.rules
 
+echo '5.2.18 Make the Audit Configuration Immutable (Scored) (ALTERNATIVE)'
+grep "^-e 2" /etc/audit/*
 
 echo '6.1.1 Enable anacron Daemon (Scored)'
 rpm -q cronie-anacron
-
 
 echo '6.1.2 Enable crond Daemon (Scored)'
 systemctl is-enabled crond
 
 echo '6.1.3 Set User/Group Owner and Permission on /etc/anacrontab (Scored)'
 stat -L -c "%a %u %g" /etc/anacrontab | egrep ".00 0 0"
-
 
 echo '6.1.4 Set User/Group Owner and Permission on /etc/crontab (Scored)'
 stat -L -c "%a %u %g" /etc/crontab | egrep ".00 0 0"
@@ -356,8 +404,14 @@ ls -l /etc/at.allow
 echo '6.2.1 Set SSH Protocol to 2 (Scored)'
 grep "^Protocol" /etc/ssh/sshd_config
 
+echo '6.2.1 Set SSH Protocol to 2 (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "Protocol"
+
 echo '6.2.2 Set LogLevel to INFO (Scored)'
 grep "^LogLevel" /etc/ssh/sshd_config
+
+echo '6.2.2 Set LogLevel to INFO (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "LogLevel"
 
 echo '6.2.3 Set Permissions on /etc/ssh/sshd_config (Scored)'
 ls -l /etc/ssh/sshd_config
@@ -365,30 +419,58 @@ ls -l /etc/ssh/sshd_config
 echo '6.2.4 Disable SSH X11 Forwarding (Scored)'
 grep "^X11Forwarding" /etc/ssh/sshd_config
 
+echo '6.2.4 Disable SSH X11 Forwarding (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "X11Forwarding"
+
 echo '6.2.5 Set SSH MaxAuthTries to 4 or Less (Scored)'
 grep "^MaxAuthTries" /etc/ssh/sshd_config
+
+echo '6.2.5 Set SSH MaxAuthTries to 4 or Less (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "maxauthtries"
 
 echo '6.2.6 Set SSH IgnoreRhosts to Yes (Scored)'
 grep "^IgnoreRhosts" /etc/ssh/sshd_config
 
+echo '6.2.6 Set SSH IgnoreRhosts to Yes (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "IgnoreRhosts"
+
 echo '6.2.7 Set SSH HostbasedAuthentication to No (Scored)'
 grep "^HostbasedAuthentication" /etc/ssh/sshd_config
+
+echo '6.2.7 Set SSH HostbasedAuthentication to No (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "HostbasedAuthentication"
 
 echo '6.2.8 Disable SSH Root Login (Scored)'
 grep "^PermitRootLogin" /etc/ssh/sshd_config
 
+echo '6.2.8 Disable SSH Root Login (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "PermitRootLogin"
+
 echo '6.2.9 Set SSH PermitEmptyPasswords to No (Scored)'
 grep "^PermitEmptyPasswords" /etc/ssh/sshd_config
 
+echo '6.2.9 Set SSH PermitEmptyPasswords to No (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "PermitEmptyPasswords"
+
 echo '6.2.10 Do Not Allow Users to Set Environment Options (Scored)'
-grep PermitUserEnvironment /etc/ssh/sshd_config
+grep "PermitUserEnvironment" /etc/ssh/sshd_config
+
+echo '6.2.10 Do Not Allow Users to Set Environment Options (Scored) (ALTERNATIVE)'
+sshd -T | grep "PermitUserEnvironment"
 
 echo '6.2.11 Use Only Approved Cipher in Counter Mode (Scored)'
 grep "Ciphers" /etc/ssh/sshd_config
 
+echo '6.2.11 Use Only Approved Cipher in Counter Mode (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "Ciphers"
+
 echo '6.2.12 Set Idle Timeout Interval for User Login (Scored)'
 grep "^ClientAliveInterval" /etc/ssh/sshd_config
 grep "^ClientAliveCountMax" /etc/ssh/sshd_config
+
+echo '6.2.12 Set Idle Timeout Interval for User Login (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "ClientAliveInterval"
+sshd -T | grep -i "ClientAliveCountMax"
 
 echo '6.2.13 Limit Access via SSH (Scored)'
 grep "^AllowUsers" /etc/ssh/sshd_config
@@ -396,8 +478,17 @@ grep "^AllowGroups" /etc/ssh/sshd_config
 grep "^DenyUsers" /etc/ssh/sshd_config
 grep "^DenyGroups" /etc/ssh/sshd_config
 
+echo '6.2.13 Limit Access via SSH (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "AllowUsers"
+sshd -T | grep -i "AllowGroups"
+sshd -T | grep -i "DenyUsers"
+sshd -T | grep -i "DenyGroups"
+
 echo '6.2.14 Set SSH Banner (Scored)'
 grep "^Banner" /etc/ssh/sshd_config
+
+echo '6.2.14 Set SSH Banner (Scored) (ALTERNATIVE)'
+sshd -T | grep -i "Banner"
 
 echo '6.3.1 Upgrade Password Hashing Algorithm to SHA-512 (Scored)'
 authconfig --test | grep hashing | grep sha512
@@ -419,6 +510,7 @@ chage --list root
 echo '7.1.2 Set Password Change Minimum Number of Days (Scored)'
 grep PASS_MIN_DAYS /etc/login.defs
 chage --list root
+
 echo '7.1.3 Set Password Expiring Warning Days (Scored)'
 grep PASS_WARN_AGE /etc/login.defs
 
@@ -437,8 +529,8 @@ useradd -D | grep INACTIVE
 
 echo '8.1 Set Warning Banner for Standard Login Services (Scored)'
 ls -l /etc/motd
-ls /etc/issue
-ls /etc/issue.net
+ls -l /etc/issue
+ls -l /etc/issue.net
 
 echo '8.2 Remove OS Information from Login Warning Banners (Scored)'
 egrep '(\\v|\\r|\\m|\\s)' /etc/issue
