@@ -501,6 +501,7 @@ chage --list root
 echo '7.1.2 Set Password Change Minimum Number of Days (Scored)'
 grep PASS_MIN_DAYS /etc/login.defs
 chage --list root
+
 echo '7.1.3 Set Password Expiring Warning Days (Scored)'
 grep PASS_WARN_AGE /etc/login.defs
 
@@ -519,8 +520,8 @@ useradd -D | grep INACTIVE
 
 echo '8.1 Set Warning Banner for Standard Login Services (Scored)'
 ls -l /etc/motd
-ls /etc/issue
-ls /etc/issue.net
+ls -l /etc/issue
+ls -l /etc/issue.net
 
 echo '8.2 Remove OS Information from Login Warning Banners (Scored)'
 egrep '(\\v|\\r|\\m|\\s)' /etc/issue
