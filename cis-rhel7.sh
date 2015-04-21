@@ -319,25 +319,38 @@ find / -xdev \( -perm -4000 -o -perm -2000 \) -type f -exec grep -Hir {} /etc/au
 echo '5.2.13 Collect Successful File System Mounts (Scored)'
 grep mounts /etc/audit/audit.rules
 
+echo '5.2.13 Collect Successful File System Mounts (Scored) (ALTERNATIVE)'
+grep -Hir mounts /etc/audit/*
 
 echo '5.2.14 Collect File Deletion Events by User (Scored)'
 grep delete /etc/audit/audit.rules
 
+echo '5.2.14 Collect File Deletion Events by User (Scored) (ALTERNATIVE)'
+grep delete /etc/audit/*
 
 echo '5.2.15 Collect Changes to System Administration Scope (sudoers) (Scored)'
 grep scope /etc/audit/audit.rules
 
+echo '5.2.15 Collect Changes to System Administration Scope (sudoers) (Scored) (ALTERNATIVE)'
+grep -Hir scope /etc/audit/*
 
 echo '5.2.16 Collect System Administrator Actions (sudolog) (Scored)'
 grep actions /etc/audit/audit.rules
 
+echo '5.2.16 Collect System Administrator Actions (sudolog) (Scored) (ALTERNATIVE)'
+grep -Hir actions /etc/audit/*
+
 echo '5.2.17 Collect Kernel Module Loading and Unloading (Scored)'
 grep modules /etc/audit/audit.rules
 
+echo '5.2.17 Collect Kernel Module Loading and Unloading (Scored) (ALTERNATIVE)'
+grep -Hir /etc/audit/*
 
 echo '5.2.18 Make the Audit Configuration Immutable (Scored)'
 grep "^-e 2" /etc/audit/audit.rules
 
+echo '5.2.18 Make the Audit Configuration Immutable (Scored) (ALTERNATIVE)'
+grep "^-e 2" /etc/audit/*
 
 echo '6.1.1 Enable anacron Daemon (Scored)'
 rpm -q cronie-anacron
