@@ -28,7 +28,7 @@ def stemmen(geldig):
 	print "[!] I'm not disclosing this"
 
 t1 = combinatie()
-for x in range(0,330):
+for x in range(0,5000):
 	getallenreeks.append(combinatie())
 verzoek = requesocks.session()
 
