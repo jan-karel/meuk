@@ -23,9 +23,9 @@ def combinatie():
 	return ''.join(random.choice(reeks) for _ in xrange(6))
 getallenreeks =[]
 
-def stemmen(self, geldig):
+def stemmen(geldig):
 	#not disclosing this
-	print "I'm not disclosing this"
+	print "[!] I'm not disclosing this"
 
 t1 = combinatie()
 for x in range(0,330):
